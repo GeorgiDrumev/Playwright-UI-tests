@@ -37,14 +37,12 @@ export class CheckoutDetailsPage extends BasePage {
   }
 
   public async verifyPageLoaded() {
-    await this.waitUtils.waitForNetworkIdle();
     await expect(this.pageTitle).toBeVisible();
     await expect(this.pageTitle).toHaveText("Checkout: Overview");
   }
 
   public async verifyItemCount(expectedCount: number) {
-    const actualCount = await this.cartItems.count();
-    expect(actualCount).toBe(expectedCount);
+    await expect(this.cartItems).toHaveCount(expectedCount);
   }
 
   public async verifyOrderSummaryDisplayed() {

@@ -66,25 +66,21 @@ export class CartPage extends BasePage {
   }
 
   public async verifyCartItemCount(expectedCount: number) {
-    const actualCount = await this.getCartItemsCount();
-    expect(actualCount).toBe(expectedCount);
+    await expect(this.cartItems).toHaveCount(expectedCount);
   }
 
   public async verifyCartIsEmpty() {
-    const count = await this.getCartItemsCount();
-    expect(count).toBe(0);
+    await expect(this.cartItems).toHaveCount(0);
   }
 
   public async verifyProductInCart(productName: string) {
-    const itemNames = await this.getCartItemNames();
-    expect(itemNames).toContain(productName);
+    await expect(this.cartItems.filter({ hasText: productName })).toBeVisible();
   }
 
   public async verifyProductsInCart(productNames: string[]) {
-    const itemNames = await this.getCartItemNames();
-    productNames.forEach((name) => {
-      expect(itemNames).toContain(name);
-    });
+    for (const name of productNames) {
+      await expect(this.cartItems.filter({ hasText: name })).toBeVisible();
+    }
   }
 
   public async verifyCheckoutButtonNotVisible() {

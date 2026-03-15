@@ -13,10 +13,10 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["./*"],
       "@data/*": ["data/*"]
     }
   },
-  "include": ["src/**/*", "data/**/*", "tests/**/*"],
+  "include": ["fixtures/**/*", "flows/**/*", "pages/**/*", "services/**/*", "types/**/*", "utils/**/*", "data/**/*", "tests/**/*"],
   "exclude": ["node_modules"]
 }

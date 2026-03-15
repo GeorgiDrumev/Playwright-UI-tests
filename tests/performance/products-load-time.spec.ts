@@ -1,4 +1,4 @@
-import { test } from "@/fixtures/base-ui-test";
+import { test } from "@/fixtures/base-unauth-ui-test";
 import { PerformanceUtils } from "@/utils/performance-utils";
 
 test.describe("Products Page Performance Tests", () => {

@@ -1,9 +1,8 @@
 import { test } from "@/fixtures/base-ui-test";
 
 test.describe("Logout Tests", () => {
-  test.beforeEach(async ({ loginPage, productsPage }) => {
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async ({ productsPage }) => {
+    await productsPage.goto();
     await productsPage.verifyPageLoaded();
   });
 

@@ -2,15 +2,10 @@ pipeline {
     agent any
 
     stages {
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t playwright-tests .'
-            }
-        }
-
         stage('Run Tests') {
             steps {
                 sh '''
+                    docker build -t playwright-tests .
                     docker run --rm \
                         -v $(pwd)/playwright-report:/app/playwright-report \
                         -v $(pwd)/test-results:/app/test-results \
@@ -19,7 +14,7 @@ pipeline {
             }
         }
     }
-
+    
     post {
         always {
             junit testResults: 'test-results/junit.xml', allowEmptyResults: true

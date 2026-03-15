@@ -3,9 +3,9 @@ import { expectedProducts } from "@data/test-data/product-data";
 import { checkoutInformation } from "@data/test-data/checkout-data";
 
 test.describe("Checkout Success Page Visual Tests", () => {
-  test.beforeEach(async ({ loginPage }) => {
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async ({ productsPage }) => {
+    await productsPage.goto();
+    await productsPage.verifyPageLoaded();
   });
 
   test(

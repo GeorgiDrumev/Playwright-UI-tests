@@ -1,10 +1,10 @@
 import { test } from "@/fixtures/base-ui-test";
+import { test as unauthTest } from "@/fixtures/base-unauth-ui-test";
 import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Cart Edge Cases", () => {
-  test.beforeEach(async ({ loginPage, productsPage }) => {
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async ({ productsPage }) => {
+    await productsPage.goto();
     await productsPage.verifyPageLoaded();
   });
 
@@ -112,8 +112,8 @@ test.describe("Cart Edge Cases", () => {
   );
 });
 
-test.describe("Cart Edge Cases - Unauthenticated Access", () => {
-  test(
+unauthTest.describe("Cart Edge Cases - Unauthenticated Access", () => {
+  unauthTest(
     "should redirect to login when accessing cart without authentication",
     { tag: ["@cart", "@edge-case"] },
     async ({ cartPage, loginPage }) => {

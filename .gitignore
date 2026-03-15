@@ -9,3 +9,4 @@ playwright/.cache/
 coverage/
 .vscode/
 .idea/
+.auth/

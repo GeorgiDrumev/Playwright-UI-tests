@@ -2,9 +2,8 @@ import { test } from "@/fixtures/base-ui-test";
 import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Product Details Tests", () => {
-  test.beforeEach(async ({ loginPage, productsPage }) => {
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async ({ productsPage }) => {
+    await productsPage.goto();
     await productsPage.verifyPageLoaded();
   });
 

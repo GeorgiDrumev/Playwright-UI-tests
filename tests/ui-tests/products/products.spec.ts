@@ -3,9 +3,8 @@ import { expectedProducts } from "@data/test-data/product-data";
 import { SortOrder, SortOption } from "@/types/sort-types";
 
 test.describe("Products Tests", () => {
-  test.beforeEach(async ({ loginPage, productsPage }) => {
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async ({ productsPage }) => {
+    await productsPage.goto();
     await productsPage.verifyPageLoaded();
   });
 

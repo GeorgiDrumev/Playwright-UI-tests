@@ -2,12 +2,6 @@ import { Page, Locator, expect } from "@playwright/test";
 import { ProductData } from "@data/test-data/product-data";
 import { BasePage } from "@/pages/base-page";
 
-export interface ActualProductDetails {
-  name: string;
-  description: string;
-  price: string;
-}
-
 export class ProductDetailsPage extends BasePage {
   private readonly productName: Locator;
   private readonly productDescription: Locator;
@@ -48,33 +42,23 @@ export class ProductDetailsPage extends BasePage {
     await this.backButton.click();
   }
 
-  public async isProductInCart(): Promise<boolean> {
-    return await this.removeButton.isVisible();
-  }
-
   public async verifyProductDetails(expectedProduct: ProductData) {
-    const actualName = (await this.productName.textContent()) || "";
-    const actualDescription =
-      (await this.productDescription.textContent()) || "";
-    const actualPrice = (await this.productPrice.textContent()) || "";
-
-    expect(actualName).toBe(expectedProduct.name);
-    expect(actualDescription).toBe(expectedProduct.description);
-    expect(actualPrice).toBe(`$${expectedProduct.price}`);
+    await expect(this.productName).toHaveText(expectedProduct.name);
+    await expect(this.productDescription).toHaveText(
+      expectedProduct.description,
+    );
+    await expect(this.productPrice).toHaveText(`$${expectedProduct.price}`);
   }
 
   public async verifyProductIsInCart() {
-    const isInCart = await this.isProductInCart();
-    expect(isInCart).toBeTruthy();
+    await expect(this.removeButton).toBeVisible();
   }
 
   public async verifyProductNotInCart() {
-    const isInCart = await this.isProductInCart();
-    expect(isInCart).toBeFalsy();
+    await expect(this.removeButton).not.toBeVisible();
   }
 
   public async verifyPageNotLoaded() {
-    const isNameVisible = await this.productName.isVisible();
-    expect(isNameVisible).toBeFalsy();
+    await expect(this.productName).not.toBeVisible();
   }
 }

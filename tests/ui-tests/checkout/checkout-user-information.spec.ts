@@ -4,9 +4,8 @@ import { errorMessages } from "@data/test-data/error-messages";
 import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Checkout User Information Tests", () => {
-  test.beforeEach(async ({ loginPage, productsPage, checkoutFlow }) => {
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async ({ productsPage, checkoutFlow }) => {
+    await productsPage.goto();
     await productsPage.verifyPageLoaded();
 
     await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);

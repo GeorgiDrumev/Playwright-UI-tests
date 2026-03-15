@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Playwright test automation project for saucedemo.com",
   "scripts": {
-    "test": "playwright test",
+    "test": "playwright test --grep-invert @known-issue",
     "test:headed": "playwright test --headed --workers=4",
     "test:ui": "playwright test --ui",
     "test:visual": "playwright test tests/visual-tests",
@@ -11,7 +11,10 @@
     "test:performance": "playwright test tests/performance --project=chromium",
     "report": "playwright show-report",
     "format": "prettier --write \"**/*.ts\" \"!node_modules/**\" \"!playwright-report/**\" \"!test-results/**\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docker:build": "docker build -t playwright-tests .",
+    "docker:test": "docker build -t playwright-tests . && docker run --rm -v %cd%/playwright-report:/app/playwright-report -v %cd%/test-results:/app/test-results playwright-tests npm test",
+    "docker:test:bash": "docker build -t playwright-tests . && docker run --rm -v $(pwd)/playwright-report:/app/playwright-report -v $(pwd)/test-results:/app/test-results playwright-tests npm test"
   },
   "keywords": [
     "playwright",

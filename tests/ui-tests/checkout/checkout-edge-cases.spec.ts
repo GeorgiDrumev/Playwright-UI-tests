@@ -4,9 +4,8 @@ import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Checkout Edge Cases", () => {
   test.describe("Information Page Edge Cases", () => {
-    test.beforeEach(async ({ loginPage, productsPage, checkoutFlow }) => {
-      await loginPage.goto();
-      await loginPage.login();
+    test.beforeEach(async ({ productsPage, checkoutFlow }) => {
+      await productsPage.goto();
       await productsPage.verifyPageLoaded();
 
       await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
@@ -37,9 +36,8 @@ test.describe("Checkout Edge Cases", () => {
     test(
       "should redirect to products page when navigating to details without items",
       { tag: ["@checkout", "@edge-case", "@known-issue"] },
-      async ({ loginPage, productsPage, checkoutDetailsPage }) => {
-        await loginPage.goto();
-        await loginPage.login();
+      async ({ productsPage, checkoutDetailsPage }) => {
+        await productsPage.goto();
         await productsPage.verifyPageLoaded();
 
         await checkoutDetailsPage.goto();
@@ -53,9 +51,8 @@ test.describe("Checkout Edge Cases", () => {
     test(
       "should redirect to products page when navigating to success page without completing checkout",
       { tag: ["@checkout", "@edge-case", "@known-issue"] },
-      async ({ loginPage, productsPage, checkoutSuccessPage }) => {
-        await loginPage.goto();
-        await loginPage.login();
+      async ({ productsPage, checkoutSuccessPage }) => {
+        await productsPage.goto();
         await productsPage.verifyPageLoaded();
 
         await checkoutSuccessPage.goto();

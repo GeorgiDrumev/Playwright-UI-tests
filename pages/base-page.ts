@@ -1,18 +1,15 @@
 import { Page } from "@playwright/test";
-import {
-  ScreenshotService,
-  ScreenshotConfig,
-} from "../services/screenshot-service";
+import { ScreenshotUtils, ScreenshotConfig } from "@/utils/screenshot-utils";
 
 export abstract class BasePage {
   readonly page: Page;
   abstract readonly url: string;
   abstract readonly screenshotFolder: string;
-  private screenshotService: ScreenshotService;
+  private screenshotUtils: ScreenshotUtils;
 
   constructor(page: Page, screenshotConfig?: ScreenshotConfig) {
     this.page = page;
-    this.screenshotService = new ScreenshotService(page, screenshotConfig);
+    this.screenshotUtils = new ScreenshotUtils(page, screenshotConfig);
   }
 
   public async goto() {
@@ -23,7 +20,7 @@ export abstract class BasePage {
     name: string,
     deviation?: number,
   ): Promise<void> {
-    await this.screenshotService.compareScreenshot(
+    await this.screenshotUtils.compareScreenshot(
       name,
       this.screenshotFolder,
       deviation,

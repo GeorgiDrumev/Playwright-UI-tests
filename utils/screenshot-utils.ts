@@ -1,6 +1,4 @@
 import { Page, expect } from "@playwright/test";
-import path from "path";
-import fs from "fs";
 
 export interface ScreenshotConfig {
   retryCount?: number;
@@ -10,7 +8,7 @@ export interface ScreenshotConfig {
   fullPage?: boolean;
 }
 
-export class ScreenshotService {
+export class ScreenshotUtils {
   private static readonly DEFAULT_RETRY_COUNT = 5;
   private static readonly DEFAULT_RETRY_DELAY = 2000;
   private static readonly DEFAULT_DEVIATION = 0.001;
@@ -23,12 +21,12 @@ export class ScreenshotService {
   constructor(page: Page, config?: ScreenshotConfig) {
     this.page = page;
     this.config = {
-      retryCount: config?.retryCount ?? ScreenshotService.DEFAULT_RETRY_COUNT,
-      retryDelay: config?.retryDelay ?? ScreenshotService.DEFAULT_RETRY_DELAY,
-      deviation: config?.deviation ?? ScreenshotService.DEFAULT_DEVIATION,
+      retryCount: config?.retryCount ?? ScreenshotUtils.DEFAULT_RETRY_COUNT,
+      retryDelay: config?.retryDelay ?? ScreenshotUtils.DEFAULT_RETRY_DELAY,
+      deviation: config?.deviation ?? ScreenshotUtils.DEFAULT_DEVIATION,
       screenshotDir:
-        config?.screenshotDir ?? ScreenshotService.DEFAULT_SCREENSHOT_DIR,
-      fullPage: config?.fullPage ?? ScreenshotService.DEFAULT_FULL_PAGE,
+        config?.screenshotDir ?? ScreenshotUtils.DEFAULT_SCREENSHOT_DIR,
+      fullPage: config?.fullPage ?? ScreenshotUtils.DEFAULT_FULL_PAGE,
     };
   }
 
@@ -56,7 +54,9 @@ export class ScreenshotService {
         lastError = error as Error;
 
         if (attempt < this.config.retryCount) {
-          await this.page.waitForTimeout(this.config.retryDelay);
+          await new Promise((resolve) =>
+            setTimeout(resolve, this.config.retryDelay),
+          );
         }
       }
     }
@@ -67,18 +67,7 @@ export class ScreenshotService {
   }
 
   private async waitForPageStabilization(): Promise<void> {
-    await this.page.waitForLoadState("networkidle");
-    await this.page.waitForTimeout(500);
+    await this.page.waitForLoadState("load");
     await this.page.evaluate(() => document.fonts.ready);
-  }
-
-  private getScreenshotPath(pageName: string): string {
-    return path.join(this.config.screenshotDir, pageName);
-  }
-
-  private ensureDirectoryExists(dirPath: string): void {
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
-    }
   }
 }

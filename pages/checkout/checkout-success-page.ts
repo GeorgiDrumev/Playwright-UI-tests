@@ -25,7 +25,6 @@ export class CheckoutSuccessPage extends BasePage {
   }
 
   public async verifyPageLoaded() {
-    await this.waitUtils.waitForNetworkIdle();
     await expect(this.pageTitle).toBeVisible();
     await expect(this.pageTitle).toHaveText("Checkout: Complete!");
   }

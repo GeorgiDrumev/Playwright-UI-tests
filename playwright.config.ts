@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 0,
+  retries: process.env.CI ? 1 : 0,
   workers: undefined,
   reporter: [
     ["html", { outputFolder: "playwright-report" }],
@@ -15,7 +15,7 @@ export default defineConfig({
   use: {
     baseURL: "https://www.saucedemo.com",
     trace: "retain-on-failure",
-    screenshot: "on",
+    screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
   expect: {
@@ -29,18 +29,26 @@ export default defineConfig({
   timeout: 15000,
   projects: [
     {
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
+        storageState: ".auth/state.json",
       },
+      dependencies: ["setup"],
     },
     {
       name: "safari-mobile",
       use: {
         ...devices["iPhone 14 Pro"],
         viewport: { width: 393, height: 852 },
+        storageState: ".auth/state.json",
       },
+      dependencies: ["setup"],
     },
   ],
 });

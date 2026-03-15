@@ -1,4 +1,4 @@
-import { test } from "@/fixtures/base-ui-test";
+import { test } from "@/fixtures/base-unauth-ui-test";
 import { testUsers, invalidCredentials } from "@data/test-data/user-data";
 import { errorMessages } from "@data/test-data/error-messages";
 

@@ -2,9 +2,9 @@ import { test } from "@/fixtures/base-ui-test";
 import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Cart Page Visual Tests", () => {
-  test.beforeEach(async ({ loginPage }) => {
-    await loginPage.goto();
-    await loginPage.login();
+  test.beforeEach(async ({ productsPage }) => {
+    await productsPage.goto();
+    await productsPage.verifyPageLoaded();
   });
 
   test(

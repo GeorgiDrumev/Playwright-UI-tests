@@ -29,7 +29,6 @@ export class ProductsPage extends BasePage {
 
   public async goto() {
     await super.goto();
-    await this.waitUtils.waitForNetworkIdle();
   }
 
   public async getInventoryItemsCount(): Promise<number> {
@@ -115,36 +114,38 @@ export class ProductsPage extends BasePage {
   }
 
   public async verifyPageLoaded() {
-    await this.waitUtils.waitForNetworkIdle();
     await expect(this.pageTitle).toBeVisible();
     await expect(this.pageTitle).toHaveText("Products");
   }
 
   public async verifyProductsAreDisplayed() {
-    const itemCount = await this.getInventoryItemsCount();
-    expect(itemCount).toBeGreaterThan(0);
+    await expect(this.inventoryItems.first()).toBeVisible();
   }
 
   public async verifyCartBadgeCount(expectedCount: string) {
-    const actualCount = await this.getCartBadgeCount();
-    expect(actualCount).toBe(expectedCount);
+    await expect(this.cartBadge).toHaveText(expectedCount);
   }
 
   public async verifyProductCount(expectedCount: number) {
-    const actualCount = await this.getInventoryItemsCount();
-    expect(actualCount).toBe(expectedCount);
+    await expect(this.inventoryItems).toHaveCount(expectedCount);
   }
 
   public async verifyProductNames(expectedProducts: ProductData[]) {
-    const actualProductNames = await this.getProductNames();
-    expectedProducts.forEach((product) => {
-      expect(actualProductNames).toContain(product.name);
-    });
+    for (const product of expectedProducts) {
+      await expect(
+        this.page
+          .locator(".inventory_item_name")
+          .filter({ hasText: product.name }),
+      ).toBeVisible();
+    }
   }
 
   public async verifyProductIsInCart(productName: string) {
-    const isInCart = await this.isProductInCart(productName);
-    expect(isInCart).toBeTruthy();
+    await expect(
+      this.inventoryItems
+        .filter({ hasText: productName })
+        .locator('[data-test^="remove"]'),
+    ).toBeVisible();
   }
 
   public async verifyCartBadgeNotVisible() {
@@ -155,21 +156,24 @@ export class ProductsPage extends BasePage {
     expectedProducts: ProductData[],
     order: SortOrder,
   ) {
-    const actualProductNames = await this.getProductNames();
     const sorted = expectedProducts.map((p) => p.name).sort();
     const expectedOrder =
-      order === SortOrder.ASCENDING ? sorted : sorted.reverse();
-    expect(actualProductNames).toEqual(expectedOrder);
+      order === SortOrder.ASCENDING ? sorted : [...sorted].reverse();
+    await expect(this.page.locator(".inventory_item_name")).toHaveText(
+      expectedOrder,
+    );
   }
 
   public async verifyProductsSortedByPrice(
     expectedProducts: ProductData[],
     order: SortOrder,
   ) {
-    const actualPrices = await this.getProductPrices();
-    const expectedOrder = expectedProducts
+    const expectedPrices = expectedProducts
       .map((p) => p.price)
-      .sort((a, b) => (order === SortOrder.ASCENDING ? a - b : b - a));
-    expect(actualPrices).toEqual(expectedOrder);
+      .sort((a, b) => (order === SortOrder.ASCENDING ? a - b : b - a))
+      .map((p) => `$${p.toFixed(2)}`);
+    await expect(this.page.locator(".inventory_item_price")).toHaveText(
+      expectedPrices,
+    );
   }
 }
