@@ -1,18 +1,24 @@
-import { test } from "@/fixtures/base-ui-test";
+import { test } from "@fixtures/base-ui-test";
 
 test.describe("Burger Menu Tests", () => {
   test.beforeEach(async ({ productsPage }) => {
     await productsPage.goto();
-    await productsPage.verifyPageLoaded();
   });
 
   test(
     "should open burger menu",
     { tag: ["@navigation", "@positive"] },
     async ({ productsPage }) => {
-      await productsPage.burgerMenu.open();
-      await productsPage.burgerMenu.verifyMenuIsOpen();
-      await productsPage.burgerMenu.verifyAllMenuItemsVisible();
+      await test.step("Given", async () => {});
+
+      await test.step("When", async () => {
+        await productsPage.burgerMenu.open();
+      });
+
+      await test.step("Then", async () => {
+        await productsPage.burgerMenu.validator.expectMenuOpen();
+        await productsPage.burgerMenu.validator.expectAllMenuItemsVisible();
+      });
     },
   );
 
@@ -20,11 +26,17 @@ test.describe("Burger Menu Tests", () => {
     "should close burger menu with X button",
     { tag: ["@navigation", "@positive"] },
     async ({ productsPage }) => {
-      await productsPage.burgerMenu.open();
-      await productsPage.burgerMenu.verifyMenuIsOpen();
+      await test.step("Given", async () => {
+        await productsPage.burgerMenu.open();
+      });
 
-      await productsPage.burgerMenu.close();
-      await productsPage.burgerMenu.verifyMenuIsClosed();
+      await test.step("When", async () => {
+        await productsPage.burgerMenu.close();
+      });
+
+      await test.step("Then", async () => {
+        await productsPage.burgerMenu.validator.expectMenuClosed();
+      });
     },
   );
 
@@ -32,12 +44,18 @@ test.describe("Burger Menu Tests", () => {
     "should navigate to All Items",
     { tag: ["@navigation", "@positive"] },
     async ({ productsPage }) => {
-      await productsPage.navigateToProductDetailsByIndex(0);
+      await test.step("Given", async () => {
+        await productsPage.navigateToProductDetailsByIndex(0);
+        await productsPage.burgerMenu.open();
+      });
 
-      await productsPage.burgerMenu.open();
-      await productsPage.burgerMenu.clickAllItems();
+      await test.step("When", async () => {
+        await productsPage.burgerMenu.clickAllItems();
+      });
 
-      await productsPage.verifyPageLoaded();
+      await test.step("Then", async () => {
+        await productsPage.validator.expectPageLoaded();
+      });
     },
   );
 
@@ -45,10 +63,17 @@ test.describe("Burger Menu Tests", () => {
     "should navigate to About page",
     { tag: ["@navigation", "@positive"] },
     async ({ productsPage, page }) => {
-      await productsPage.burgerMenu.open();
-      await productsPage.burgerMenu.clickAbout();
+      await test.step("Given", async () => {
+        await productsPage.burgerMenu.open();
+      });
 
-      await page.waitForURL(/saucelabs\.com/);
+      await test.step("When", async () => {
+        await productsPage.burgerMenu.clickAbout();
+      });
+
+      await test.step("Then", async () => {
+        await page.waitForURL(/saucelabs\.com/);
+      });
     },
   );
 
@@ -56,14 +81,19 @@ test.describe("Burger Menu Tests", () => {
     "should reset app state",
     { tag: ["@navigation", "@positive"] },
     async ({ productsPage }) => {
-      await productsPage.addProductToCart("Sauce Labs Backpack");
-      await productsPage.verifyCartBadgeCount("1");
+      await test.step("Given", async () => {
+        await productsPage.addProductToCart("Sauce Labs Backpack");
+      });
 
-      await productsPage.burgerMenu.open();
-      await productsPage.burgerMenu.clickResetApp();
-      await productsPage.burgerMenu.close();
+      await test.step("When", async () => {
+        await productsPage.burgerMenu.open();
+        await productsPage.burgerMenu.clickResetApp();
+        await productsPage.burgerMenu.close();
+      });
 
-      await productsPage.verifyCartBadgeNotVisible();
+      await test.step("Then", async () => {
+        await productsPage.validator.expectCartBadgeNotVisible();
+      });
     },
   );
 
@@ -71,14 +101,20 @@ test.describe("Burger Menu Tests", () => {
     "should navigate from cart to products page via All Items",
     { tag: ["@navigation", "@positive"] },
     async ({ productsPage, cartPage }) => {
-      await productsPage.addProductToCart("Sauce Labs Backpack");
-      await productsPage.navigateToCart();
-      await cartPage.verifyPageLoaded();
+      await test.step("Given", async () => {
+        await productsPage.addProductToCart("Sauce Labs Backpack");
+        await productsPage.navigateToCart();
+        await cartPage.validator.expectPageLoaded();
+      });
 
-      await cartPage.burgerMenu.open();
-      await cartPage.burgerMenu.clickAllItems();
+      await test.step("When", async () => {
+        await cartPage.burgerMenu.open();
+        await cartPage.burgerMenu.clickAllItems();
+      });
 
-      await productsPage.verifyPageLoaded();
+      await test.step("Then", async () => {
+        await productsPage.validator.expectPageLoaded();
+      });
     },
   );
 });

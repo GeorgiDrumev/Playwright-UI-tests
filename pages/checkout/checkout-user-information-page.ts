@@ -1,23 +1,23 @@
-import { Page, Locator, expect } from "@playwright/test";
-import { WaitUtils } from "@/utils/wait-utils";
-import { BasePage } from "@/pages/base-page";
-import { CheckoutInformation } from "@data/test-data/checkout-data";
+import { Page, Locator } from "@playwright/test";
+import { BasePage } from "@pages/base-page";
+import { ROUTES } from "@utils/routes";
+import type { CheckoutInformation } from "@dtos/checkout.dto";
+import { CheckoutUserInformationValidator } from "@pages/checkout/validators/checkout-user-information.validator";
 
 export class CheckoutUserInformationPage extends BasePage {
   private readonly pageTitle: Locator;
-  private readonly waitUtils: WaitUtils;
   private readonly firstNameInput: Locator;
   private readonly lastNameInput: Locator;
   private readonly postalCodeInput: Locator;
   private readonly continueButton: Locator;
   private readonly cancelButton: Locator;
   private readonly errorMessage: Locator;
-  readonly url = "https://www.saucedemo.com/checkout-step-one.html";
+  readonly url = ROUTES.checkoutStep1;
   readonly screenshotFolder = "checkout";
+  readonly validator: CheckoutUserInformationValidator;
 
   constructor(page: Page) {
     super(page);
-    this.waitUtils = new WaitUtils(page);
     this.pageTitle = page.locator(".title");
     this.firstNameInput = page.locator('[data-test="firstName"]');
     this.lastNameInput = page.locator('[data-test="lastName"]');
@@ -25,6 +25,7 @@ export class CheckoutUserInformationPage extends BasePage {
     this.continueButton = page.locator('[data-test="continue"]');
     this.cancelButton = page.locator('[data-test="cancel"]');
     this.errorMessage = page.locator('[data-test="error"]');
+    this.validator = new CheckoutUserInformationValidator(page);
   }
 
   public async fillCheckoutInformation(info: CheckoutInformation) {
@@ -39,20 +40,5 @@ export class CheckoutUserInformationPage extends BasePage {
 
   public async clickCancel() {
     await this.cancelButton.click();
-  }
-
-  public async getErrorMessage(): Promise<string> {
-    return (await this.errorMessage.textContent()) || "";
-  }
-
-  public async verifyPageLoaded() {
-    await expect(this.pageTitle).toBeVisible();
-    await expect(this.pageTitle).toHaveText("Checkout: Your Information");
-  }
-
-  public async verifyErrorMessageDisplayed(expectedMessage: string) {
-    await expect(this.errorMessage).toBeVisible();
-    const actualMessage = await this.getErrorMessage();
-    expect(actualMessage).toContain(expectedMessage);
   }
 }

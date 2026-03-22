@@ -1,10 +1,9 @@
-import { test } from "@/fixtures/base-ui-test";
+import { test } from "@fixtures/base-ui-test";
 import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Product Details Tests", () => {
   test.beforeEach(async ({ productsPage }) => {
     await productsPage.goto();
-    await productsPage.verifyPageLoaded();
   });
 
   test(
@@ -13,8 +12,17 @@ test.describe("Product Details Tests", () => {
     async ({ productsPage, productDetailsPage }) => {
       const expectedProduct = expectedProducts[0];
 
-      await productsPage.navigateToProductDetails(expectedProduct.name);
-      await productDetailsPage.verifyProductDetails(expectedProduct);
+      await test.step("Given", async () => {});
+
+      await test.step("When", async () => {
+        await productsPage.navigateToProductDetails(expectedProduct.name);
+      });
+
+      await test.step("Then", async () => {
+        await productDetailsPage.validator.expectProductDetails(
+          expectedProduct,
+        );
+      });
     },
   );
 
@@ -24,9 +32,17 @@ test.describe("Product Details Tests", () => {
     async ({ productsPage, productDetailsPage }) => {
       const product = expectedProducts[0];
 
-      await productsPage.navigateToProductDetails(product.name);
-      await productDetailsPage.addToCart();
-      await productDetailsPage.verifyProductIsInCart();
+      await test.step("Given", async () => {
+        await productsPage.navigateToProductDetails(product.name);
+      });
+
+      await test.step("When", async () => {
+        await productDetailsPage.addToCart();
+      });
+
+      await test.step("Then", async () => {
+        await productDetailsPage.validator.expectProductInCart();
+      });
     },
   );
 
@@ -36,9 +52,17 @@ test.describe("Product Details Tests", () => {
     async ({ productsPage, productDetailsPage }) => {
       const product = expectedProducts[0];
 
-      await productsPage.navigateToProductDetails(product.name);
-      await productDetailsPage.clickBackButton();
-      await productsPage.verifyPageLoaded();
+      await test.step("Given", async () => {
+        await productsPage.navigateToProductDetails(product.name);
+      });
+
+      await test.step("When", async () => {
+        await productDetailsPage.clickBackButton();
+      });
+
+      await test.step("Then", async () => {
+        await productsPage.validator.expectPageLoaded();
+      });
     },
   );
 
@@ -48,12 +72,18 @@ test.describe("Product Details Tests", () => {
     async ({ productsPage, productDetailsPage }) => {
       const product = expectedProducts[0];
 
-      await productsPage.navigateToProductDetails(product.name);
-      await productDetailsPage.addToCart();
-      await productDetailsPage.verifyProductIsInCart();
+      await test.step("Given", async () => {
+        await productsPage.navigateToProductDetails(product.name);
+        await productDetailsPage.addToCart();
+      });
 
-      await productDetailsPage.removeFromCart();
-      await productDetailsPage.verifyProductNotInCart();
+      await test.step("When", async () => {
+        await productDetailsPage.removeFromCart();
+      });
+
+      await test.step("Then", async () => {
+        await productDetailsPage.validator.expectProductNotInCart();
+      });
     },
   );
 });

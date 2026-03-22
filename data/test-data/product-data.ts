@@ -1,10 +1,5 @@
-export interface ProductData {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  imageName: string;
-}
+export type { ProductData } from "@dtos/product.dto";
+import type { ProductData } from "@dtos/product.dto";
 
 export const INVALID_PRODUCT_ID = 999;
 

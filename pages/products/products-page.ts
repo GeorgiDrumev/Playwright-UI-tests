@@ -1,9 +1,10 @@
-import { Page, Locator, expect } from "@playwright/test";
-import { WaitUtils } from "@/utils/wait-utils";
-import { SortOption, SortOrder } from "@/types/sort-types";
-import { ProductData } from "@data/test-data/product-data";
-import { BasePage } from "@/pages/base-page";
-import { BurgerMenu } from "@/pages/components/burger-menu";
+import { Page, Locator } from "@playwright/test";
+import { WaitUtils } from "@utils/wait-utils";
+import { SortOption } from "../../types/sort-types";
+import { BasePage } from "@pages/base-page";
+import { BurgerMenu } from "@pages/components/burger-menu";
+import { ROUTES } from "@utils/routes";
+import { ProductsValidator } from "@pages/products/validators/products.validator";
 
 export class ProductsPage extends BasePage {
   private readonly pageTitle: Locator;
@@ -12,9 +13,10 @@ export class ProductsPage extends BasePage {
   private readonly cartBadge: Locator;
   private readonly cartIcon: Locator;
   readonly waitUtils: WaitUtils;
-  readonly url = "https://www.saucedemo.com/inventory.html";
+  readonly url = ROUTES.products;
   readonly screenshotFolder = "products";
   readonly burgerMenu: BurgerMenu;
+  readonly validator: ProductsValidator;
 
   constructor(page: Page) {
     super(page);
@@ -25,6 +27,7 @@ export class ProductsPage extends BasePage {
     this.cartIcon = page.locator(".shopping_cart_link");
     this.waitUtils = new WaitUtils(page);
     this.burgerMenu = new BurgerMenu(page);
+    this.validator = new ProductsValidator(page);
   }
 
   public async goto() {
@@ -111,69 +114,5 @@ export class ProductsPage extends BasePage {
       .filter({ hasText: productName })
       .locator('[data-test^="remove"]')
       .isVisible();
-  }
-
-  public async verifyPageLoaded() {
-    await expect(this.pageTitle).toBeVisible();
-    await expect(this.pageTitle).toHaveText("Products");
-  }
-
-  public async verifyProductsAreDisplayed() {
-    await expect(this.inventoryItems.first()).toBeVisible();
-  }
-
-  public async verifyCartBadgeCount(expectedCount: string) {
-    await expect(this.cartBadge).toHaveText(expectedCount);
-  }
-
-  public async verifyProductCount(expectedCount: number) {
-    await expect(this.inventoryItems).toHaveCount(expectedCount);
-  }
-
-  public async verifyProductNames(expectedProducts: ProductData[]) {
-    for (const product of expectedProducts) {
-      await expect(
-        this.page
-          .locator(".inventory_item_name")
-          .filter({ hasText: product.name }),
-      ).toBeVisible();
-    }
-  }
-
-  public async verifyProductIsInCart(productName: string) {
-    await expect(
-      this.inventoryItems
-        .filter({ hasText: productName })
-        .locator('[data-test^="remove"]'),
-    ).toBeVisible();
-  }
-
-  public async verifyCartBadgeNotVisible() {
-    await expect(this.cartBadge).not.toBeVisible();
-  }
-
-  public async verifyProductsSortedByName(
-    expectedProducts: ProductData[],
-    order: SortOrder,
-  ) {
-    const sorted = expectedProducts.map((p) => p.name).sort();
-    const expectedOrder =
-      order === SortOrder.ASCENDING ? sorted : [...sorted].reverse();
-    await expect(this.page.locator(".inventory_item_name")).toHaveText(
-      expectedOrder,
-    );
-  }
-
-  public async verifyProductsSortedByPrice(
-    expectedProducts: ProductData[],
-    order: SortOrder,
-  ) {
-    const expectedPrices = expectedProducts
-      .map((p) => p.price)
-      .sort((a, b) => (order === SortOrder.ASCENDING ? a - b : b - a))
-      .map((p) => `$${p.toFixed(2)}`);
-    await expect(this.page.locator(".inventory_item_price")).toHaveText(
-      expectedPrices,
-    );
   }
 }

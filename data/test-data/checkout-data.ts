@@ -1,8 +1,4 @@
-export interface CheckoutInformation {
-  firstName: string;
-  lastName: string;
-  postalCode: string;
-}
+export type { CheckoutInformation } from "@dtos/checkout.dto";
 
 export const checkoutInformation = {
   validInfo: {

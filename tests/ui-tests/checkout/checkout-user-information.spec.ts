@@ -1,4 +1,4 @@
-import { test } from "@/fixtures/base-ui-test";
+import { test } from "@fixtures/base-ui-test";
 import { checkoutInformation } from "@data/test-data/checkout-data";
 import { errorMessages } from "@data/test-data/error-messages";
 import { expectedProducts } from "@data/test-data/product-data";
@@ -6,8 +6,6 @@ import { expectedProducts } from "@data/test-data/product-data";
 test.describe("Checkout User Information Tests", () => {
   test.beforeEach(async ({ productsPage, checkoutFlow }) => {
     await productsPage.goto();
-    await productsPage.verifyPageLoaded();
-
     await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
     await checkoutFlow.proceedToCheckoutInformation();
   });
@@ -33,12 +31,18 @@ test.describe("Checkout User Information Tests", () => {
         testName,
         { tag: ["@checkout", "@positive"] },
         async ({ checkoutUserInformationPage, checkoutDetailsPage }) => {
-          await checkoutUserInformationPage.verifyPageLoaded();
+          await test.step("Given", async () => {
+            await checkoutUserInformationPage.validator.expectPageLoaded();
+          });
 
-          await checkoutUserInformationPage.fillCheckoutInformation(data);
-          await checkoutUserInformationPage.clickContinue();
+          await test.step("When", async () => {
+            await checkoutUserInformationPage.fillCheckoutInformation(data);
+            await checkoutUserInformationPage.clickContinue();
+          });
 
-          await checkoutDetailsPage.verifyPageLoaded();
+          await test.step("Then", async () => {
+            await checkoutDetailsPage.validator.expectPageLoaded();
+          });
         },
       );
     }
@@ -47,12 +51,18 @@ test.describe("Checkout User Information Tests", () => {
       "should cancel and return to cart",
       { tag: ["@checkout", "@positive"] },
       async ({ checkoutUserInformationPage, cartPage }) => {
-        await checkoutUserInformationPage.verifyPageLoaded();
+        await test.step("Given", async () => {
+          await checkoutUserInformationPage.validator.expectPageLoaded();
+        });
 
-        await checkoutUserInformationPage.clickCancel();
+        await test.step("When", async () => {
+          await checkoutUserInformationPage.clickCancel();
+        });
 
-        await cartPage.verifyPageLoaded();
-        await cartPage.verifyCartItemCount(1);
+        await test.step("Then", async () => {
+          await cartPage.validator.expectPageLoaded();
+          await cartPage.validator.expectCartItemCount(1);
+        });
       },
     );
   });
@@ -86,14 +96,20 @@ test.describe("Checkout User Information Tests", () => {
         testName,
         { tag: ["@checkout", "@negative"] },
         async ({ checkoutUserInformationPage }) => {
-          await checkoutUserInformationPage.verifyPageLoaded();
+          await test.step("Given", async () => {
+            await checkoutUserInformationPage.validator.expectPageLoaded();
+          });
 
-          await checkoutUserInformationPage.fillCheckoutInformation(data);
-          await checkoutUserInformationPage.clickContinue();
+          await test.step("When", async () => {
+            await checkoutUserInformationPage.fillCheckoutInformation(data);
+            await checkoutUserInformationPage.clickContinue();
+          });
 
-          await checkoutUserInformationPage.verifyErrorMessageDisplayed(
-            expectedError,
-          );
+          await test.step("Then", async () => {
+            await checkoutUserInformationPage.validator.expectErrorMessageDisplayed(
+              expectedError,
+            );
+          });
         },
       );
     }

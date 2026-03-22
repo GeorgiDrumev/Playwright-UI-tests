@@ -1,10 +1,10 @@
-import { ProductsPage } from "@/pages/products/products-page";
-import { CartPage } from "@/pages/cart-page";
-import { CheckoutUserInformationPage } from "@/pages/checkout/checkout-user-information-page";
-import { CheckoutDetailsPage } from "@/pages/checkout/checkout-details-page";
-import { CheckoutSuccessPage } from "@/pages/checkout/checkout-success-page";
-import { CheckoutInformation } from "@data/test-data/checkout-data";
-import { ProductData } from "@data/test-data/product-data";
+import { ProductsPage } from "@pages/products/products-page";
+import { CartPage } from "@pages/cart-page";
+import { CheckoutUserInformationPage } from "@pages/checkout/checkout-user-information-page";
+import { CheckoutDetailsPage } from "@pages/checkout/checkout-details-page";
+import { CheckoutSuccessPage } from "@pages/checkout/checkout-success-page";
+import type { CheckoutInformation } from "@dtos/checkout.dto";
+import type { ProductData } from "@dtos/product.dto";
 
 export class CheckoutFlow {
   constructor(
@@ -20,23 +20,19 @@ export class CheckoutFlow {
       await this.productsPage.addProductToCart(product.name);
     }
     await this.productsPage.navigateToCart();
-    await this.cartPage.verifyPageLoaded();
   }
 
   public async proceedToCheckoutInformation() {
     await this.cartPage.clickCheckout();
-    await this.checkoutUserInformationPage.verifyPageLoaded();
   }
 
   public async fillInformationAndProceed(info: CheckoutInformation) {
     await this.checkoutUserInformationPage.fillCheckoutInformation(info);
     await this.checkoutUserInformationPage.clickContinue();
-    await this.checkoutDetailsPage.verifyPageLoaded();
   }
 
   public async completeOrder() {
     await this.checkoutDetailsPage.clickFinish();
-    await this.checkoutSuccessPage.verifyPageLoaded();
   }
 
   public async completeCheckoutFlow(

@@ -1,21 +1,27 @@
-import { test } from "@/fixtures/base-ui-test";
-import { test as unauthTest } from "@/fixtures/base-unauth-ui-test";
+import { test } from "@fixtures/base-ui-test";
+import { test as unauthTest } from "@fixtures/base-unauth-ui-test";
 import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Cart Edge Cases", () => {
   test.beforeEach(async ({ productsPage }) => {
     await productsPage.goto();
-    await productsPage.verifyPageLoaded();
   });
 
   test(
     "should not allow checkout with empty cart",
     { tag: ["@cart", "@edge-case", "@known-issue"] },
     async ({ productsPage, cartPage }) => {
-      await productsPage.navigateToCart();
-      await cartPage.verifyPageLoaded();
-      await cartPage.verifyCartIsEmpty();
-      await cartPage.verifyCheckoutButtonNotVisible();
+      await test.step("Given", async () => {
+        await productsPage.navigateToCart();
+      });
+
+      await test.step("When", async () => {});
+
+      await test.step("Then", async () => {
+        await cartPage.validator.expectPageLoaded();
+        await cartPage.validator.expectCartEmpty();
+        await cartPage.validator.expectCheckoutButtonNotVisible();
+      });
     },
   );
 
@@ -23,18 +29,21 @@ test.describe("Cart Edge Cases", () => {
     "should prevent checkout after removing all items",
     { tag: ["@cart", "@edge-case", "@known-issue"] },
     async ({ checkoutFlow, cartPage, checkoutUserInformationPage }) => {
-      await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
-      await cartPage.clickCheckout();
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
+        await cartPage.clickCheckout();
+        await checkoutUserInformationPage.validator.expectPageLoaded();
+      });
 
-      await checkoutUserInformationPage.verifyPageLoaded();
-      await checkoutUserInformationPage.clickCancel();
-      await cartPage.verifyPageLoaded();
-      await cartPage.verifyCartItemCount(1);
+      await test.step("When", async () => {
+        await cartPage.clickContinueShopping();
+        await cartPage.removeItemByIndex(0);
+      });
 
-      await cartPage.removeItemByIndex(0);
-      await cartPage.verifyCartIsEmpty();
-
-      await cartPage.verifyCheckoutButtonNotVisible();
+      await test.step("Then", async () => {
+        await cartPage.validator.expectCartEmpty();
+        await cartPage.validator.expectCheckoutButtonNotVisible();
+      });
     },
   );
 
@@ -42,31 +51,42 @@ test.describe("Cart Edge Cases", () => {
     "should handle removing all items and then adding again",
     { tag: ["@cart", "@edge-case"] },
     async ({ productsPage, cartPage, checkoutFlow }) => {
-      await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
-      await cartPage.verifyCartItemCount(1);
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
+        await cartPage.removeItemByIndex(0);
+      });
 
-      await cartPage.removeItemByIndex(0);
-      await cartPage.verifyCartIsEmpty();
+      await test.step("When", async () => {
+        await cartPage.clickContinueShopping();
+        await productsPage.addProductToCart(expectedProducts[1].name);
+        await productsPage.navigateToCart();
+      });
 
-      await cartPage.clickContinueShopping();
-      await productsPage.addProductToCart(expectedProducts[1].name);
-      await productsPage.navigateToCart();
-      await cartPage.verifyCartItemCount(1);
+      await test.step("Then", async () => {
+        await cartPage.validator.expectCartItemCount(1);
+      });
     },
   );
 
   test(
     "should handle browser back navigation from cart",
     { tag: ["@cart", "@edge-case"] },
-    async ({ productsPage, cartPage, page, checkoutFlow }) => {
-      await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
+    async ({ productsPage, cartPage, checkoutFlow, page }) => {
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
+      });
 
-      await page.goBack();
-      await productsPage.verifyPageLoaded();
+      await test.step("When", async () => {
+        await page.goBack();
+      });
 
-      await page.goForward();
-      await cartPage.verifyPageLoaded();
-      await cartPage.verifyCartItemCount(1);
+      await test.step("Then", async () => {
+        await productsPage.validator.expectPageLoaded();
+
+        await page.goForward();
+        await cartPage.validator.expectPageLoaded();
+        await cartPage.validator.expectCartItemCount(1);
+      });
     },
   );
 
@@ -74,24 +94,29 @@ test.describe("Cart Edge Cases", () => {
     "should handle concurrent cart modifications",
     { tag: ["@cart", "@edge-case"] },
     async ({ productsPage, cartPage, checkoutFlow }) => {
-      await checkoutFlow.addProductsAndNavigateToCart([
-        expectedProducts[0],
-        expectedProducts[1],
-        expectedProducts[2],
-      ]);
-      await cartPage.verifyCartItemCount(3);
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([
+          expectedProducts[0],
+          expectedProducts[1],
+          expectedProducts[2],
+        ]);
+      });
 
-      await cartPage.clickContinueShopping();
-      await productsPage.removeProductFromCart(expectedProducts[0].name);
-      await productsPage.addProductToCart(expectedProducts[3].name);
+      await test.step("When", async () => {
+        await cartPage.clickContinueShopping();
+        await productsPage.removeProductFromCart(expectedProducts[0].name);
+        await productsPage.addProductToCart(expectedProducts[3].name);
+        await productsPage.navigateToCart();
+      });
 
-      await productsPage.navigateToCart();
-      await cartPage.verifyCartItemCount(3);
-      await cartPage.verifyProductsInCart([
-        expectedProducts[1].name,
-        expectedProducts[2].name,
-        expectedProducts[3].name,
-      ]);
+      await test.step("Then", async () => {
+        await cartPage.validator.expectCartItemCount(3);
+        await cartPage.validator.expectProductsInCart([
+          expectedProducts[1].name,
+          expectedProducts[2].name,
+          expectedProducts[3].name,
+        ]);
+      });
     },
   );
 
@@ -99,15 +124,21 @@ test.describe("Cart Edge Cases", () => {
     "should maintain cart state during session",
     { tag: ["@cart", "@edge-case"] },
     async ({ productsPage, cartPage, page }) => {
-      await productsPage.addProductToCart(expectedProducts[0].name);
-      await productsPage.addProductToCart(expectedProducts[1].name);
+      await test.step("Given", async () => {
+        await productsPage.addProductToCart(expectedProducts[0].name);
+        await productsPage.addProductToCart(expectedProducts[1].name);
+      });
 
-      await page.reload();
-      await productsPage.verifyPageLoaded();
-      await productsPage.verifyCartBadgeCount("2");
+      await test.step("When", async () => {
+        await page.reload();
+      });
 
-      await productsPage.navigateToCart();
-      await cartPage.verifyCartItemCount(2);
+      await test.step("Then", async () => {
+        await productsPage.validator.expectCartBadgeCount("2");
+
+        await productsPage.navigateToCart();
+        await cartPage.validator.expectCartItemCount(2);
+      });
     },
   );
 });
@@ -117,9 +148,15 @@ unauthTest.describe("Cart Edge Cases - Unauthenticated Access", () => {
     "should redirect to login when accessing cart without authentication",
     { tag: ["@cart", "@edge-case"] },
     async ({ cartPage, loginPage }) => {
-      await cartPage.goto();
+      await unauthTest.step("Given", async () => {});
 
-      await loginPage.verifyPageLoaded();
+      await unauthTest.step("When", async () => {
+        await cartPage.goto();
+      });
+
+      await unauthTest.step("Then", async () => {
+        await loginPage.validator.expectPageLoaded();
+      });
     },
   );
 });

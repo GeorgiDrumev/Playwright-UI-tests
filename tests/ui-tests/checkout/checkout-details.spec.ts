@@ -1,12 +1,10 @@
-import { test } from "@/fixtures/base-ui-test";
+import { test } from "@fixtures/base-ui-test";
 import { checkoutInformation } from "@data/test-data";
 import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Checkout Details (Overview) Tests", () => {
   test.beforeEach(async ({ productsPage, checkoutFlow }) => {
     await productsPage.goto();
-    await productsPage.verifyPageLoaded();
-
     await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
     await checkoutFlow.navigateToCheckoutDetails(checkoutInformation.validInfo);
   });
@@ -15,9 +13,15 @@ test.describe("Checkout Details (Overview) Tests", () => {
     "should display order summary correctly",
     { tag: ["@checkout", "@positive"] },
     async ({ checkoutDetailsPage }) => {
-      await checkoutDetailsPage.verifyPageLoaded();
-      await checkoutDetailsPage.verifyItemCount(1);
-      await checkoutDetailsPage.verifyOrderSummaryDisplayed();
+      await test.step("Given", async () => {});
+
+      await test.step("When", async () => {});
+
+      await test.step("Then", async () => {
+        await checkoutDetailsPage.validator.expectPageLoaded();
+        await checkoutDetailsPage.validator.expectItemCount(1);
+        await checkoutDetailsPage.validator.expectOrderSummaryDisplayed();
+      });
     },
   );
 
@@ -25,8 +29,16 @@ test.describe("Checkout Details (Overview) Tests", () => {
     "should calculate totals correctly",
     { tag: ["@checkout", "@positive"] },
     async ({ checkoutDetailsPage }) => {
-      await checkoutDetailsPage.verifyPageLoaded();
-      await checkoutDetailsPage.verifyTotalsCalculation([expectedProducts[0]]);
+      await test.step("Given", async () => {});
+
+      await test.step("When", async () => {});
+
+      await test.step("Then", async () => {
+        await checkoutDetailsPage.validator.expectPageLoaded();
+        await checkoutDetailsPage.validator.expectTotalsCalculation([
+          expectedProducts[0],
+        ]);
+      });
     },
   );
 
@@ -34,36 +46,45 @@ test.describe("Checkout Details (Overview) Tests", () => {
     "should cancel from overview page and return to products",
     { tag: ["@checkout", "@positive"] },
     async ({ checkoutDetailsPage, productsPage }) => {
-      await checkoutDetailsPage.verifyPageLoaded();
-      await checkoutDetailsPage.clickCancel();
+      await test.step("Given", async () => {
+        await checkoutDetailsPage.validator.expectPageLoaded();
+      });
 
-      await productsPage.verifyPageLoaded();
+      await test.step("When", async () => {
+        await checkoutDetailsPage.clickCancel();
+      });
+
+      await test.step("Then", async () => {
+        await productsPage.validator.expectPageLoaded();
+      });
     },
   );
 
   test(
     "should calculate correct totals with multiple items",
     { tag: ["@checkout", "@positive"] },
-    async ({ checkoutDetailsPage, productsPage, checkoutFlow }) => {
-      await checkoutDetailsPage.verifyPageLoaded();
-      await checkoutDetailsPage.clickCancel();
+    async ({ productsPage, checkoutDetailsPage, checkoutFlow }) => {
+      await test.step("Given", async () => {
+        await checkoutDetailsPage.clickCancel();
+        await productsPage.addProductToCart(expectedProducts[1].name);
+        await productsPage.addProductToCart(expectedProducts[2].name);
+        await productsPage.navigateToCart();
+        await checkoutFlow.navigateToCheckoutDetails(
+          checkoutInformation.validInfo,
+        );
+      });
 
-      await productsPage.verifyPageLoaded();
-      await productsPage.addProductToCart(expectedProducts[1].name);
-      await productsPage.addProductToCart(expectedProducts[2].name);
-      await productsPage.navigateToCart();
+      await test.step("When", async () => {});
 
-      await checkoutFlow.navigateToCheckoutDetails(
-        checkoutInformation.validInfo,
-      );
-
-      await checkoutDetailsPage.verifyPageLoaded();
-      await checkoutDetailsPage.verifyItemCount(3);
-      await checkoutDetailsPage.verifyTotalsCalculation([
-        expectedProducts[0],
-        expectedProducts[1],
-        expectedProducts[2],
-      ]);
+      await test.step("Then", async () => {
+        await checkoutDetailsPage.validator.expectPageLoaded();
+        await checkoutDetailsPage.validator.expectItemCount(3);
+        await checkoutDetailsPage.validator.expectTotalsCalculation([
+          expectedProducts[0],
+          expectedProducts[1],
+          expectedProducts[2],
+        ]);
+      });
     },
   );
 
@@ -71,11 +92,18 @@ test.describe("Checkout Details (Overview) Tests", () => {
     "should proceed to success page when finishing order",
     { tag: ["@checkout", "@positive"] },
     async ({ checkoutDetailsPage, checkoutSuccessPage }) => {
-      await checkoutDetailsPage.verifyPageLoaded();
-      await checkoutDetailsPage.clickFinish();
+      await test.step("Given", async () => {
+        await checkoutDetailsPage.validator.expectPageLoaded();
+      });
 
-      await checkoutSuccessPage.verifyPageLoaded();
-      await checkoutSuccessPage.verifyOrderComplete();
+      await test.step("When", async () => {
+        await checkoutDetailsPage.clickFinish();
+      });
+
+      await test.step("Then", async () => {
+        await checkoutSuccessPage.validator.expectPageLoaded();
+        await checkoutSuccessPage.validator.expectOrderComplete();
+      });
     },
   );
 });

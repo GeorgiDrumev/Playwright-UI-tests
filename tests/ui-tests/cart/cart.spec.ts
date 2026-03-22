@@ -1,33 +1,48 @@
-import { test } from "@/fixtures/base-ui-test";
+import { test } from "@fixtures/base-ui-test";
 import { expectedProducts } from "@data/test-data/product-data";
 
 test.describe("Cart Tests", () => {
   test.beforeEach(async ({ productsPage }) => {
     await productsPage.goto();
-    await productsPage.verifyPageLoaded();
   });
 
   test(
     "should display empty cart initially",
     { tag: ["@cart", "@positive"] },
     async ({ productsPage, cartPage }) => {
-      await productsPage.navigateToCart();
-      await cartPage.verifyPageLoaded();
-      await cartPage.verifyCartIsEmpty();
+      await test.step("Given", async () => {});
+
+      await test.step("When", async () => {
+        await productsPage.navigateToCart();
+      });
+
+      await test.step("Then", async () => {
+        await cartPage.validator.expectPageLoaded();
+        await cartPage.validator.expectCartEmpty();
+      });
     },
   );
 
   test(
     "should display products added to cart",
     { tag: ["@cart", "@positive"] },
-    async ({ cartPage, checkoutFlow }) => {
+    async ({ checkoutFlow, cartPage }) => {
       const product1 = expectedProducts[0];
       const product2 = expectedProducts[1];
 
-      await checkoutFlow.addProductsAndNavigateToCart([product1, product2]);
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([product1, product2]);
+      });
 
-      await cartPage.verifyProductsInCart([product1.name, product2.name]);
-      await cartPage.verifyCartItemCount(2);
+      await test.step("When", async () => {});
+
+      await test.step("Then", async () => {
+        await cartPage.validator.expectProductsInCart([
+          product1.name,
+          product2.name,
+        ]);
+        await cartPage.validator.expectCartItemCount(2);
+      });
     },
   );
 
@@ -37,11 +52,17 @@ test.describe("Cart Tests", () => {
     async ({ cartPage, checkoutFlow }) => {
       const product = expectedProducts[0];
 
-      await checkoutFlow.addProductsAndNavigateToCart([product]);
-      await cartPage.verifyProductInCart(product.name);
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([product]);
+      });
 
-      await cartPage.removeItemByName(product.name);
-      await cartPage.verifyCartIsEmpty();
+      await test.step("When", async () => {
+        await cartPage.removeItemByName(product.name);
+      });
+
+      await test.step("Then", async () => {
+        await cartPage.validator.expectCartEmpty();
+      });
     },
   );
 
@@ -49,22 +70,23 @@ test.describe("Cart Tests", () => {
     "should remove multiple products from cart",
     { tag: ["@cart", "@positive"] },
     async ({ cartPage, checkoutFlow }) => {
-      await checkoutFlow.addProductsAndNavigateToCart([
-        expectedProducts[0],
-        expectedProducts[1],
-        expectedProducts[2],
-      ]);
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([
+          expectedProducts[0],
+          expectedProducts[1],
+          expectedProducts[2],
+        ]);
+      });
 
-      await cartPage.verifyCartItemCount(3);
+      await test.step("When", async () => {
+        await cartPage.removeItemByIndex(0);
+        await cartPage.removeItemByIndex(0);
+        await cartPage.removeItemByIndex(0);
+      });
 
-      await cartPage.removeItemByIndex(0);
-      await cartPage.verifyCartItemCount(2);
-
-      await cartPage.removeItemByIndex(0);
-      await cartPage.verifyCartItemCount(1);
-
-      await cartPage.removeItemByIndex(0);
-      await cartPage.verifyCartIsEmpty();
+      await test.step("Then", async () => {
+        await cartPage.validator.expectCartEmpty();
+      });
     },
   );
 
@@ -72,38 +94,58 @@ test.describe("Cart Tests", () => {
     "should navigate back to products page via Continue Shopping",
     { tag: ["@cart", "@positive"] },
     async ({ productsPage, cartPage }) => {
-      await productsPage.navigateToCart();
-      await cartPage.verifyPageLoaded();
+      await test.step("Given", async () => {
+        await productsPage.navigateToCart();
+      });
 
-      await cartPage.clickContinueShopping();
-      await productsPage.verifyPageLoaded();
+      await test.step("When", async () => {
+        await cartPage.clickContinueShopping();
+      });
+
+      await test.step("Then", async () => {
+        await productsPage.validator.expectPageLoaded();
+      });
     },
   );
 
   test(
     "should navigate to checkout page",
     { tag: ["@cart", "@positive"] },
-    async ({ cartPage, checkoutUserInformationPage, checkoutFlow }) => {
-      await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
+    async ({ cartPage, checkoutFlow, checkoutUserInformationPage }) => {
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([expectedProducts[0]]);
+      });
 
-      await cartPage.clickCheckout();
-      await checkoutUserInformationPage.verifyPageLoaded();
+      await test.step("When", async () => {
+        await cartPage.clickCheckout();
+      });
+
+      await test.step("Then", async () => {
+        await checkoutUserInformationPage.validator.expectPageLoaded();
+      });
     },
   );
 
   test(
     "should navigate to product details page when clicking item",
     { tag: ["@cart", "@positive", "@known-issue"] },
-    async ({ cartPage, productDetailsPage, checkoutFlow }) => {
+    async ({ cartPage, checkoutFlow, productDetailsPage }) => {
       const product = expectedProducts[0];
 
-      await checkoutFlow.addProductsAndNavigateToCart([product]);
+      await test.step("Given", async () => {
+        await checkoutFlow.addProductsAndNavigateToCart([product]);
+      });
 
-      await cartPage.clickItemByName(product.name);
-      await productDetailsPage.verifyProductDetails(product);
+      await test.step("When", async () => {
+        await cartPage.clickItemByName(product.name);
+      });
 
-      await productDetailsPage.clickBackButton();
-      await cartPage.verifyPageLoaded();
+      await test.step("Then", async () => {
+        await productDetailsPage.validator.expectProductDetails(product);
+
+        await cartPage.clickItemByName(product.name);
+        await cartPage.validator.expectPageLoaded();
+      });
     },
   );
 });

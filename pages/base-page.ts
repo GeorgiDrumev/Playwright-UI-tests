@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { ScreenshotUtils, ScreenshotConfig } from "@/utils/screenshot-utils";
+import { ScreenshotUtils, ScreenshotConfig } from "@utils/screenshot-utils";
 
 export abstract class BasePage {
   readonly page: Page;

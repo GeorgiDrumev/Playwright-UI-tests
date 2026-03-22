@@ -1,9 +1,8 @@
-import { test } from "@/fixtures/base-ui-test";
+import { test } from "@fixtures/base-ui-test";
 
 test.describe("Logout Tests", () => {
   test.beforeEach(async ({ productsPage }) => {
     await productsPage.goto();
-    await productsPage.verifyPageLoaded();
   });
 
   test.describe("Positive Scenarios", () => {
@@ -11,12 +10,19 @@ test.describe("Logout Tests", () => {
       "should clear session after logout",
       { tag: ["@authentication", "@positive"] },
       async ({ productsPage, loginPage }) => {
-        await productsPage.burgerMenu.open();
-        await productsPage.burgerMenu.clickLogout();
-        await loginPage.verifyPageLoaded();
+        await test.step("Given", async () => {});
 
-        await productsPage.goto();
-        await loginPage.verifyPageLoaded();
+        await test.step("When", async () => {
+          await productsPage.burgerMenu.open();
+          await productsPage.burgerMenu.clickLogout();
+        });
+
+        await test.step("Then", async () => {
+          await loginPage.validator.expectPageLoaded();
+
+          await productsPage.goto();
+          await loginPage.validator.expectPageLoaded();
+        });
       },
     );
   });

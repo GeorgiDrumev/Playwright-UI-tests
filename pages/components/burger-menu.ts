@@ -1,5 +1,6 @@
-import { Page, Locator, expect } from "@playwright/test";
-import { WaitUtils } from "@/utils/wait-utils";
+import { Page, Locator } from "@playwright/test";
+import { WaitUtils } from "@utils/wait-utils";
+import { BurgerMenuValidator } from "@pages/components/validators/burger-menu.validator";
 
 export class BurgerMenu {
   private readonly page: Page;
@@ -11,6 +12,7 @@ export class BurgerMenu {
   private readonly resetAppLink: Locator;
   private readonly menuOverlay: Locator;
   private readonly waitUtils: WaitUtils;
+  readonly validator: BurgerMenuValidator;
 
   constructor(page: Page) {
     this.page = page;
@@ -22,6 +24,7 @@ export class BurgerMenu {
     this.resetAppLink = page.locator('[data-test="reset-sidebar-link"]');
     this.menuOverlay = page.locator(".bm-overlay");
     this.waitUtils = new WaitUtils(page);
+    this.validator = new BurgerMenuValidator(page);
   }
 
   public async open() {
@@ -48,22 +51,5 @@ export class BurgerMenu {
 
   public async clickResetApp() {
     await this.resetAppLink.click();
-  }
-
-  public async verifyMenuIsOpen() {
-    await expect(this.closeButton).toBeVisible();
-    await expect(this.allItemsLink).toBeVisible();
-    await expect(this.logoutLink).toBeVisible();
-  }
-
-  public async verifyMenuIsClosed() {
-    await expect(this.closeButton).not.toBeVisible();
-  }
-
-  public async verifyAllMenuItemsVisible() {
-    await expect(this.allItemsLink).toBeVisible();
-    await expect(this.aboutLink).toBeVisible();
-    await expect(this.logoutLink).toBeVisible();
-    await expect(this.resetAppLink).toBeVisible();
   }
 }

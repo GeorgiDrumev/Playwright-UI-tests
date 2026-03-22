@@ -1,6 +1,7 @@
-import { Page, Locator, expect } from "@playwright/test";
-import { ProductData } from "@data/test-data/product-data";
-import { BasePage } from "@/pages/base-page";
+import { Page, Locator } from "@playwright/test";
+import { BasePage } from "@pages/base-page";
+import { ROUTES } from "@utils/routes";
+import { ProductDetailsValidator } from "@pages/products/validators/product-details.validator";
 
 export class ProductDetailsPage extends BasePage {
   private readonly productName: Locator;
@@ -9,8 +10,9 @@ export class ProductDetailsPage extends BasePage {
   private readonly addToCartButton: Locator;
   private readonly removeButton: Locator;
   private readonly backButton: Locator;
-  readonly url = "https://www.saucedemo.com/inventory-item.html";
+  readonly url = ROUTES.productDetails;
   readonly screenshotFolder = "product-details";
+  readonly validator: ProductDetailsValidator;
 
   constructor(page: Page) {
     super(page);
@@ -20,6 +22,7 @@ export class ProductDetailsPage extends BasePage {
     this.addToCartButton = page.locator('[data-test^="add-to-cart"]');
     this.removeButton = page.locator('[data-test^="remove"]');
     this.backButton = page.locator('[data-test="back-to-products"]');
+    this.validator = new ProductDetailsValidator(page);
   }
 
   public async goto(productId?: number): Promise<void> {
@@ -40,25 +43,5 @@ export class ProductDetailsPage extends BasePage {
 
   public async clickBackButton() {
     await this.backButton.click();
-  }
-
-  public async verifyProductDetails(expectedProduct: ProductData) {
-    await expect(this.productName).toHaveText(expectedProduct.name);
-    await expect(this.productDescription).toHaveText(
-      expectedProduct.description,
-    );
-    await expect(this.productPrice).toHaveText(`$${expectedProduct.price}`);
-  }
-
-  public async verifyProductIsInCart() {
-    await expect(this.removeButton).toBeVisible();
-  }
-
-  public async verifyProductNotInCart() {
-    await expect(this.removeButton).not.toBeVisible();
-  }
-
-  public async verifyPageNotLoaded() {
-    await expect(this.productName).not.toBeVisible();
   }
 }

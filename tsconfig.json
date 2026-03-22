@@ -13,10 +13,15 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@data/*": ["data/*"]
+      "@pages/*":     ["pages/*"],
+      "@fixtures/*":  ["fixtures/*"],
+      "@utils/*":     ["utils/*"],
+      "@flows/*":     ["flows/*"],
+      "@dtos/*":      ["dtos/*"],
+      "@factories/*": ["factories/*"],
+      "@data/*":      ["data/*"]
     }
   },
-  "include": ["fixtures/**/*", "flows/**/*", "pages/**/*", "services/**/*", "types/**/*", "utils/**/*", "data/**/*", "tests/**/*"],
+  "include": ["fixtures/**/*", "flows/**/*", "pages/**/*", "services/**/*", "types/**/*", "utils/**/*", "data/**/*", "tests/**/*", "dtos/**/*", "factories/**/*"],
   "exclude": ["node_modules"]
 }

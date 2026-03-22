@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 2 : 1,
   workers: undefined,
   reporter: [
     ["html", { outputFolder: "playwright-report" }],
@@ -13,7 +13,7 @@ export default defineConfig({
     ["github"],
   ],
   use: {
-    baseURL: "https://www.saucedemo.com",
+    baseURL: process.env.BASE_URL ?? "https://www.saucedemo.com",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure",

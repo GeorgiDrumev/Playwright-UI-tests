@@ -1,6 +1,8 @@
-import { Page, Locator, expect } from "@playwright/test";
-import { BasePage } from "@/pages/base-page";
-import { BurgerMenu } from "@/pages/components/burger-menu";
+import { Page, Locator } from "@playwright/test";
+import { BasePage } from "@pages/base-page";
+import { BurgerMenu } from "@pages/components/burger-menu";
+import { ROUTES } from "@utils/routes";
+import { CartValidator } from "@pages/cart/validators/cart.validator";
 
 export class CartPage extends BasePage {
   private readonly pageTitle: Locator;
@@ -10,8 +12,9 @@ export class CartPage extends BasePage {
   private readonly continueShoppingButton: Locator;
   private readonly checkoutButton: Locator;
   readonly burgerMenu: BurgerMenu;
-  readonly url = "https://www.saucedemo.com/cart.html";
+  readonly url = ROUTES.cart;
   readonly screenshotFolder = "cart";
+  readonly validator: CartValidator;
 
   constructor(page: Page) {
     super(page);
@@ -24,6 +27,7 @@ export class CartPage extends BasePage {
     );
     this.checkoutButton = page.locator('[data-test="checkout"]');
     this.burgerMenu = new BurgerMenu(page);
+    this.validator = new CartValidator(page);
   }
 
   public async getCartItemsCount(): Promise<number> {
@@ -58,32 +62,5 @@ export class CartPage extends BasePage {
       .filter({ hasText: productName })
       .locator(this.itemName)
       .click();
-  }
-
-  public async verifyPageLoaded() {
-    await expect(this.pageTitle).toBeVisible();
-    await expect(this.pageTitle).toHaveText("Your Cart");
-  }
-
-  public async verifyCartItemCount(expectedCount: number) {
-    await expect(this.cartItems).toHaveCount(expectedCount);
-  }
-
-  public async verifyCartIsEmpty() {
-    await expect(this.cartItems).toHaveCount(0);
-  }
-
-  public async verifyProductInCart(productName: string) {
-    await expect(this.cartItems.filter({ hasText: productName })).toBeVisible();
-  }
-
-  public async verifyProductsInCart(productNames: string[]) {
-    for (const name of productNames) {
-      await expect(this.cartItems.filter({ hasText: name })).toBeVisible();
-    }
-  }
-
-  public async verifyCheckoutButtonNotVisible() {
-    await expect(this.checkoutButton).not.toBeVisible();
   }
 }

@@ -1,13 +1,13 @@
 import { test as base } from "@playwright/test";
-import { LoginPage } from "@/pages/login-page";
-import { ProductsPage } from "@/pages/products/products-page";
-import { ProductDetailsPage } from "@/pages/products/product-details-page";
-import { CartPage } from "@/pages/cart-page";
-import { CheckoutUserInformationPage } from "@/pages/checkout/checkout-user-information-page";
-import { CheckoutDetailsPage } from "@/pages/checkout/checkout-details-page";
-import { CheckoutSuccessPage } from "@/pages/checkout/checkout-success-page";
-import { BurgerMenu } from "@/pages/components/burger-menu";
-import { CheckoutFlow } from "@/flows/checkout-flow";
+import { LoginPage } from "@pages/login-page";
+import { ProductsPage } from "@pages/products/products-page";
+import { ProductDetailsPage } from "@pages/products/product-details-page";
+import { CartPage } from "@pages/cart-page";
+import { CheckoutUserInformationPage } from "@pages/checkout/checkout-user-information-page";
+import { CheckoutDetailsPage } from "@pages/checkout/checkout-details-page";
+import { CheckoutSuccessPage } from "@pages/checkout/checkout-success-page";
+import { BurgerMenu } from "@pages/components/burger-menu";
+import { CheckoutFlow } from "@flows/checkout-flow";
 
 type PageFixtures = {
   loginPage: LoginPage;

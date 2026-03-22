@@ -1,4 +1,4 @@
-import { test } from "@/fixtures/base-unauth-ui-test";
+import { test } from "@fixtures/base-unauth-ui-test";
 import { testUsers, invalidCredentials } from "@data/test-data/user-data";
 import { errorMessages } from "@data/test-data/error-messages";
 
@@ -12,9 +12,15 @@ test.describe("Login Tests", () => {
       "should login successfully with valid credentials",
       { tag: ["@authentication", "@positive"] },
       async ({ loginPage, productsPage }) => {
-        await loginPage.login();
+        await test.step("Given", async () => {});
 
-        await productsPage.verifyPageLoaded();
+        await test.step("When", async () => {
+          await loginPage.login();
+        });
+
+        await test.step("Then", async () => {
+          await productsPage.validator.expectPageLoaded();
+        });
       },
     );
   });
@@ -53,8 +59,15 @@ test.describe("Login Tests", () => {
         name,
         { tag: ["@authentication", "@negative"] },
         async ({ loginPage }) => {
-          await loginPage.login(credentials);
-          await loginPage.verifyErrorMessageIsDisplayed(expectedError);
+          await test.step("Given", async () => {});
+
+          await test.step("When", async () => {
+            await loginPage.login(credentials);
+          });
+
+          await test.step("Then", async () => {
+            await loginPage.validator.expectErrorMessage(expectedError);
+          });
         },
       );
     });
@@ -63,9 +76,15 @@ test.describe("Login Tests", () => {
       "should redirect to login when accessing protected pages without authentication",
       { tag: ["@authentication", "@negative"] },
       async ({ checkoutUserInformationPage, loginPage }) => {
-        await checkoutUserInformationPage.goto();
+        await test.step("Given", async () => {});
 
-        await loginPage.verifyPageLoaded();
+        await test.step("When", async () => {
+          await checkoutUserInformationPage.goto();
+        });
+
+        await test.step("Then", async () => {
+          await loginPage.validator.expectPageLoaded();
+        });
       },
     );
   });

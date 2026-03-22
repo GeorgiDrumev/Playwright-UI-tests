@@ -1,4 +1,4 @@
-import { test } from "@/fixtures/base-unauth-ui-test";
+import { test } from "@fixtures/base-unauth-ui-test";
 import { invalidCredentials } from "@data/test-data/user-data";
 
 test.describe("Login Page Visual Tests", () => {

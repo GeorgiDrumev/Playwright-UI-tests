@@ -1,6 +1,5 @@
-import { test } from "@/fixtures/base-unauth-ui-test";
-import { PerformanceUtils } from "@/utils/performance-utils";
-
+import { test } from "@fixtures/base-unauth-ui-test";
+import { PerformanceUtils } from "@utils/performance-utils";
 test.describe("Products Page Performance Tests", () => {
   let performance: PerformanceUtils;
 
@@ -16,7 +15,7 @@ test.describe("Products Page Performance Tests", () => {
       performance.startTimer();
 
       await loginPage.login();
-      await productsPage.verifyPageLoaded();
+      await productsPage.validator.expectPageLoaded();
 
       performance.assertLoadTime(2000, "Products page load after login");
     },

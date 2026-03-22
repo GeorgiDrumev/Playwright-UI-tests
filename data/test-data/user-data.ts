@@ -1,7 +1,4 @@
-export interface UserCredentials {
-  username: string;
-  password: string;
-}
+export type { UserCredentials } from "@dtos/user.dto";
 
 export const testUsers = {
   standardUser: {
